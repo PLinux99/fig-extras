@@ -1,0 +1,167 @@
+#### license: creative commons cc0 1.0 (public domain)
+#### http://creativecommons.org/publicdomain/zero/1.0/
+
+proginf = "distdiff 0.2, aug 2016 mn"
+
+# this program is FREE SOFTWARE and comes with NO WARRANTY
+
+debinstall_md5deep 0
+
+function cmd
+python
+    from sys import argv as figargv ; return figargv[1:]
+    fig
+    fig
+
+function plusquotes st mvar
+    q 34  chr
+    qq q  times 2
+    now mvar  plus " "  plus q  plus st  plus q  split now qq  join now q  return now
+    fig
+
+function orph mvar
+   ck instr mvar "/"
+   iftrue ck
+       mlen mvar  len  minus  ck
+       now mvar  right mlen  return now
+   else
+       now  return mvar     
+       fig
+   fig
+
+e 0
+try
+f1 cmd mid 1  1
+f2 cmd mid 2  1 rtrim
+f3 "."
+#f3 cmd mid 3 1 rtrim
+
+pwd "pwd" arrshell mid 1 1
+whoami "whoami" arrshell mid 1 1
+e 1
+
+ifequal whoami "root"
+
+iftrue debinstall_md5deep
+    now "echo installing md5deep ; apt-get install -y md5deep 2> /dev/null > /dev/null" shell
+    fig
+
+now "mkdir  " plusquotes f3 now plus "/1 2> /dev/null" shell
+now "mkdir  " plusquotes f3 now plus "/2 2> /dev/null" shell
+now "mkdir -p " plusquotes f3 now plus "/1/iso/1 2> /dev/null" shell
+now "mkdir -p " plusquotes f3 now plus "/2/iso/1 2> /dev/null" shell
+now "mkdir  " plusquotes f3 now plus "/1/sqfs 2> /dev/null" shell
+now "mkdir  " plusquotes f3 now plus "/2/sqfs 2> /dev/null" shell
+
+now "mount " plusquotes f1 now  plus " 1/iso/1" shell
+now "mount " plusquotes f2 now  plus " 2/iso/1" shell
+
+onesq "find 1 | egrep -i '.sfs$|.squashfs'" arrshell
+sqlen onesq len minus 1
+onesq left sqlen #print
+
+num
+forin sq onesq
+inc num val  plus 1  str  swap inc num
+now "mkdir 1/sqfs/"  plus num  plus " 2> /dev/null"  shell
+now "mount " plusquotes sq now  plus " 1/sqfs/" plus num   shell
+next
+
+twosq "find 2 | egrep -i '.sfs$|.squashfs'" arrshell
+sqlen twosq len minus 1
+twosq left sqlen #print
+
+num
+forin sq twosq
+inc num val  plus 1  str  swap inc num
+now "mkdir 2/sqfs/"  plus num  plus " 2> /dev/null"  shell
+now "mount " plusquotes sq now  plus " 2/sqfs/" plus num   shell
+next
+
+#now "mount | egrep 'iso|1|2'" shell
+
+try
+o "md5deep -of -sr 1" arrshell
+except
+pass
+resume
+
+try
+p "md5deep -of -sr 2" arrshell
+except
+pass
+resume
+
+now "umount " plusquotes f3 now plus "/1/sqfs/* 2> /dev/null" shell
+now "umount " plusquotes f3 now plus "/2/sqfs/* 2> /dev/null" shell
+now "umount " plusquotes f3 now plus "/1/iso/1  2> /dev/null" shell
+now "umount " plusquotes f3 now plus "/2/iso/1  2> /dev/null" shell
+
+function ckl p
+plen p len
+r "" arr times plen
+forin each p
+md5 split each " " mid 1 1   
+ck pwd len plus 37
+pathlen each len minus ck
+iftrue ck
+path each right pathlen  orph path  orph path
+else
+path ""
+fig
+now md5  plus " "  plus path
+r arrset plen now
+ckplen plen minus 1 swap ckplen plen
+#ckplen plen mod 250
+#ifequal ckplen 0
+#now plen prints " " prints
+#fig
+next
+now return r
+fig
+
+o ckl o
+p ckl p
+
+xc
+yc
+
+#z "in "  plus f1  print
+forin y o
+yin instr p y sgn
+ifequal yin 0
+z "< " prints
+z y print
+else
+z "= " prints
+z y print
+fig
+next
+
+z ""  print
+forin x p
+xin instr o x  sgn
+ifequal xin 0
+z "> " prints
+z x  print
+#else
+#z "= " prints
+#z x  print
+fig
+next
+now ""  print
+
+else   
+    now whoami
+    e 1
+    now "sudo distdiff " plusquotes f1 now  plusquotes f2 now   now shell
+   
+    fig
+
+except
+
+ifequal e 0
+z proginf print "usage: distdiff iso-file1 iso-file2" print "" print end
+fig
+
+resume 
