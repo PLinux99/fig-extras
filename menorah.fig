@@ -1,0 +1,274 @@
+
+#### license: creative commons cc0 1.0 (public domain) 
+#### http://creativecommons.org/publicdomain/zero/1.0/ 
+
+textmode
+
+light_shamash_first 1
+
+months "12 12 12 12 12 12 12 12"
+days   "24 25 26 27 28 29 30 31"
+
+mo  date  split mo  "/"  mid 1 1
+day date  split day "/"  mid 2 1
+
+#now "echo $(while [ 1 ] ; do aplay hs.wav > /dev/null 2> /dev/null ; sleep 2 ; done) &"  shell
+
+now  colortext 15  highlight 2  cls
+
+# check calendar against m/d data; assume time is past sunset
+chday 0
+for c 1 8 1
+    ckm split months " "  mid c 1
+    ckd split days   " "  mid c 1
+    ifequal ckm mo
+        ifequal ckd day
+            chday c
+            fig
+        fig
+    next
+
+# allow manual candle count
+ck command len
+iftrue ck
+    try
+        # check validity of input
+        now  command  mid 1 1  val  int
+        ifless now 0
+            now 0
+            fig
+        ifmore now 8
+            now 8
+            fig  
+        chday now
+    except 
+        pass
+        resume
+    fig
+
+function hval n
+    # convert 0 1 2 3 4 5 6 7 8 9 a  b  c  d  e  f 
+    # ... to  0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15
+    try
+        now n val  return now
+    except
+        ck n lcase  instr "abcdef" ck
+        iftrue ck
+            now ck  plus 9  return now  
+        else
+            now -1 return now
+            fig
+        resume
+    fig
+
+function p pic x y
+    # plot image
+    n 10 chr
+    pc split pic n  
+    h pc len 
+    w pc mid 1 1 len 
+    for xw 1 w 1 
+        for yh 1 h 1
+            pc split pic n   
+            h pc len
+            w pc mid 1 1 len  
+            pc join pc "" 
+            try
+                index yh  minus 1  times w  plus xw  arrget pc index  hval index
+                xl    xw  plus x   minus 2 
+                yl    yh  plus y   minus 2 
+                ifequal index -1
+                    pass
+                else
+                    now   pset xl yl index
+                    fig
+            except
+                pass
+                resume
+            next
+        next
+    fig
+
+now cls
+
+greet ""
+wick ""
+python
+    greetuni = [1495, 1504, 1493, 1499, 1492, 32, 32, 1513, 1502, 1495]
+    greetuni = [32,] * 10 + greetuni + [32,] * 10
+    greet = ""
+    wick = unichr(9474)
+    for x in greetuni: greet = unichr(x) + greet
+    fig
+
+candle ""
+python 
+    candle = """ 77
+ 77
+ 77
+ 99
+ 99
+ 99
+ 99
+ 11
+ 11
+ 11
+ 11"""
+    fig
+
+holder ""
+python 
+    holder = """      
+ 8888 
+88  88
+888888
+ 8888 
+ 7777 
+  77  """
+    fig
+
+sholder ""
+python 
+    sholder = """      
+ 8888 
+88  88
+888888
+ 8888 
+ 7777 
+ 8778 
+ 8778 
+ 8778 
+ 8778 """
+    fig
+
+base ""
+python 
+    base = """22222222222222222222222222
+2          8888          2
+2         88  88         2
+2         877778         2
+2         877778         2
+2      777877778777      2
+27777778887777778887777772
+78888888877777777888888887
+78888888887777778888888887
+27777778888888888887777772
+2      777777777777      2"""
+    fig
+
+holders ""
+python 
+    holders = """2 77777777777777777777777777777777777777777777777777777777 2
+277888888888888888888888888888888888888888888888888888888772
+778888888888888888888888888888888888888888888888888888888877
+777888888888888888888888888888888888888888888888888888888777
+787777777777777777777777777777777777777777777777777777777787
+788888888888888888888888888888888888888888888888888888888887
+278888888888888888888888888888888888888888888888888888888872
+2 78888888888888888888888888888888888888888888888888888887 2
+2  777777777777777777777777777777777777777777777777777777  2"""
+   fig
+
+f1 ""
+python
+    f1 = """22cc22
+2cefc2
+ceffec
+2cffec
+ 2fe2
+"""
+   fig
+
+f2 ""
+python
+    f2 = """22ee22
+2effe2
+effffe
+2efffe
+22ff22
+"""
+   fig
+
+f3 ""
+python
+    f3 = """   ee 
+  effe
+ eeffe
+  effe
+ 2ff2
+"""
+   fig
+
+now p base 43 28
+now p holders 26 22
+now " "  times 50  locate 28 31  colortext 0 highlight 7  print
+now greet  locate 28 41  print #xt 0  highlight 7  print
+fa f1  arr  plus f2  plus f3
+for c 5 13 1
+    x c times 6
+    y 10
+    ifequal c 9
+        now y  minus 3  swap now y
+        fig
+    xm x  minus 1
+    yp y  plus 8
+    now p holder xm yp
+    ifequal c 9
+        now p sholder xm yp
+        fig
+    now p candle x y
+    ym y minus 1
+    xp randint 1 2 plus x
+    now wick  colortext 7  highlight 2  locate ym xp print
+    next
+
+function drawcs s f y
+    for c s f 1
+        x c   times 6
+        fw    randint 1 3
+        f fa  mid fw 1
+        xm x  minus 1
+        ym y  minus 2
+        now   p f xm ym
+        next
+    fig
+
+try
+
+now 27  chr  plus "[?25l"  prints  # hide cursor
+
+while
+    iftrue chday
+        iftrue light_shamash_first
+            now drawcs 9 9 4
+            fig
+        ifmore chday 3 
+            now drawcs 5 8 7
+            fig
+        ifequal chday 3
+            now drawcs 5 7 7
+            fig
+        ifequal chday 2
+            now drawcs 5 6 7
+            fig
+        ifequal chday 1
+            now drawcs 5 5 7
+            fig
+        ifmore chday 4
+            extra chday  minus 5  plus 10
+            now drawcs 10 extra 7
+            fig
+        iftrue light_shamash_first
+                pass
+            else
+                now drawcs 9 9 4
+            fig
+        fig
+    now sleep .05
+    wend
+
+except
+pass
+resume
+
+now 27  chr plus "[?25h"  colortext 7  highlight 0  prints
